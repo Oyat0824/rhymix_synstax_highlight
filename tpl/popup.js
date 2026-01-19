@@ -66,10 +66,11 @@ function insertCode()
 	opt.code = getArrangedCode(opt.code, 'wyswig');
 
 	var style = "font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important; " +
-		"border: 1px solid #e1e8ed !important; " +
+		"border: 1px solid #4a4a4a !important; " +
 		"border-left: 4px solid #4a90e2 !important; " +
 		"padding: 12px !important; " +
-		"background: #f8f9fa url('./modules/editor/components/synstax_highlight/component_icon.gif') no-repeat top right !important; " +
+		"background: #2a2a2a url('./modules/editor/components/synstax_highlight/component_icon.gif') no-repeat right 8px center !important; " +
+		"color: #d0d0d0 !important; " +
 		"border-radius: 4px !important; " +
 		"margin: 10px 0 !important;";
 
