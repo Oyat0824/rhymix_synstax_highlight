@@ -167,10 +167,23 @@ window.copyCodeToClipboard = function(btn) {
 		clearTimeout(parseInt(existingTimer));
 	}
 
+	// 리셋 타이머 클리어 및 재설정
+	var resetTimer = btn.getAttribute("data-reset-timer");
+	if(resetTimer) {
+		clearTimeout(parseInt(resetTimer));
+	}
+
 	// 클릭 횟수 추적
 	var clickCount = parseInt(btn.getAttribute("data-copy-count") || "0");
 	clickCount++;
 	btn.setAttribute("data-copy-count", clickCount);
+
+	// 10초 후 클릭 횟수 리셋
+	var resetTimerId = setTimeout(function() {
+		btn.setAttribute("data-copy-count", "0");
+		btn.removeAttribute("data-reset-timer");
+	}, 10000);
+	btn.setAttribute("data-reset-timer", resetTimerId);
 
 	// 이스터에그 메시지들
 	var messages = [
@@ -187,9 +200,11 @@ window.copyCodeToClipboard = function(btn) {
 	var messageIndex = Math.min(clickCount - 1, messages.length - 1);
 	var message = messages[messageIndex];
 
-	// 떨림 효과 클래스
-	var shakeClass = "copy-shake";
-	if(clickCount >= 7) {
+	// 떨림 효과 클래스 (3단계 이상부터 적용)
+	var shakeClass = "";
+	if(clickCount >= 3 && clickCount < 7) {
+		shakeClass = "copy-shake";
+	} else if(clickCount >= 7) {
 		shakeClass = "copy-shake-intense";
 	}
 
@@ -200,7 +215,10 @@ window.copyCodeToClipboard = function(btn) {
 		}
 
 		btn.textContent = message;
-		btn.classList.add("copy-message", shakeClass);
+		btn.classList.add("copy-message");
+		if(shakeClass) {
+			btn.classList.add(shakeClass);
+		}
 
 		var timer = setTimeout(function() {
 			btn.textContent = originalText;
