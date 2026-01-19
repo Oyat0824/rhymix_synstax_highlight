@@ -69,7 +69,7 @@ function insertCode()
 		"border: 1px solid #4a4a4a !important; " +
 		"border-left: 4px solid #4a90e2 !important; " +
 		"padding: 12px !important; " +
-		"background: #2a2a2a url('./modules/editor/components/synstax_highlight/component_icon.gif') no-repeat right 8px center !important; " +
+		"background: #2a2a2a url('./modules/editor/components/synstax_highlight/component_icon.gif') no-repeat right 8px top 8px !important; " +
 		"color: #d0d0d0 !important; " +
 		"border-radius: 4px !important; " +
 		"margin: 10px 0 !important;";
@@ -155,16 +155,64 @@ function getArrangedCode(code, outputType)
 window.copyCodeToClipboard = function(btn) {
 	var text = btn.getAttribute("data-clipboard-text") || btn.closest("pre").querySelector("code").textContent;
 	if(!text) return;
+
+	// 중복 클릭 방지
+	if(btn.classList.contains("copy-message")) {
+		return;
+	}
+
+	// 이전 타이머 클리어
+	var existingTimer = btn.getAttribute("data-copy-timer");
+	if(existingTimer) {
+		clearTimeout(parseInt(existingTimer));
+	}
+
+	// 클릭 횟수 추적
+	var clickCount = parseInt(btn.getAttribute("data-copy-count") || "0");
+	clickCount++;
+	btn.setAttribute("data-copy-count", clickCount);
+
+	// 이스터에그 메시지들
+	var messages = [
+		"복사 완료!",
+		"또 복사?",
+		"계속 복사하네?",
+		"진짜 많이 복사하시네...",
+		"복사 마니아시군요!",
+		"복사 중독자 발견!",
+		"복사왕 등장!",
+		"복사 신이시네요!",
+		"복사의 신!!!!!!!!!!"
+	];
+	var messageIndex = Math.min(clickCount - 1, messages.length - 1);
+	var message = messages[messageIndex];
+
+	// 떨림 효과 클래스
+	var shakeClass = "copy-shake";
+	if(clickCount >= 7) {
+		shakeClass = "copy-shake-intense";
+	}
+
+	var copySuccess = function() {
+		var originalText = btn.getAttribute("data-original-text") || "Copy";
+		if(!btn.getAttribute("data-original-text")) {
+			btn.setAttribute("data-original-text", originalText);
+		}
+
+		btn.textContent = message;
+		btn.classList.add("copy-message", shakeClass);
+
+		var timer = setTimeout(function() {
+			btn.textContent = originalText;
+			btn.classList.remove("copy-message", shakeClass);
+			btn.removeAttribute("data-copy-timer");
+		}, 2500);
+
+		btn.setAttribute("data-copy-timer", timer);
+	};
+
 	if(navigator.clipboard && navigator.clipboard.writeText) {
-		navigator.clipboard.writeText(text).then(function() {
-			var originalText = btn.textContent;
-			btn.textContent = "복사 완료!";
-			btn.classList.add("copy-message");
-			setTimeout(function() {
-				btn.textContent = originalText;
-				btn.classList.remove("copy-message");
-			}, 2000);
-		}).catch(function(err) {
+		navigator.clipboard.writeText(text).then(copySuccess).catch(function(err) {
 		});
 	} else {
 		var textArea = document.createElement("textarea");
@@ -175,13 +223,7 @@ window.copyCodeToClipboard = function(btn) {
 		textArea.select();
 		try {
 			document.execCommand("copy");
-			var originalText = btn.textContent;
-			btn.textContent = "복사 완료!";
-			btn.classList.add("copy-message");
-			setTimeout(function() {
-				btn.textContent = originalText;
-				btn.classList.remove("copy-message");
-			}, 2000);
+			copySuccess();
 		} catch(err) {
 		}
 		document.body.removeChild(textArea);

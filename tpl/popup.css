@@ -126,6 +126,36 @@ pre .code-lang-label .copy-button.copy-message:hover {
 	border-color: #4ec9b0 !important;
 }
 
+/* 떨림 효과 */
+pre.hljs .code-lang-label .copy-button.copy-shake,
+pre .code-lang-label .copy-button.copy-shake {
+	animation: shake 0.5s ease-in-out;
+}
+
+pre.hljs .code-lang-label .copy-button.copy-shake-intense,
+pre .code-lang-label .copy-button.copy-shake-intense {
+	animation: shakeIntense 0.8s ease-in-out;
+}
+
+@keyframes shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+	20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+@keyframes shakeIntense {
+	0%, 100% { transform: translateX(0) rotate(0deg); }
+	10% { transform: translateX(-5px) rotate(-2deg); }
+	20% { transform: translateX(5px) rotate(2deg); }
+	30% { transform: translateX(-5px) rotate(-2deg); }
+	40% { transform: translateX(5px) rotate(2deg); }
+	50% { transform: translateX(-5px) rotate(-2deg); }
+	60% { transform: translateX(5px) rotate(2deg); }
+	70% { transform: translateX(-3px) rotate(-1deg); }
+	80% { transform: translateX(3px) rotate(1deg); }
+	90% { transform: translateX(-2px) rotate(-0.5deg); }
+}
+
 pre code {
 	padding: 0 !important;
 	background: transparent !important;
