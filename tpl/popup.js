@@ -27,32 +27,39 @@ function insertCode()
 	var iframe_obj = opener.editorGetIFrame(opener.editorPrevSrl);
 	var prevNode = opener.editorPrevNode;
 
-	try {
-		if(iframe_obj) {
-			var actualIframe = iframe_obj.querySelector('iframe');
-			if(actualIframe && actualIframe.contentWindow && actualIframe.contentWindow.document) {
-				var iframeDoc = actualIframe.contentWindow.document;
-				var selection = iframeDoc.getSelection ? iframeDoc.getSelection() :
-								(iframeDoc.defaultView && iframeDoc.defaultView.getSelection ?
-								iframeDoc.defaultView.getSelection() : null);
+	// 수정 모드인지 확인 (기존 코드 블록을 수정하는 경우)
+	var isEditMode = prevNode && prevNode.nodeName == 'DIV' &&
+					prevNode.getAttribute('editor_component') === 'synstax_highlight';
 
-				if(selection && selection.rangeCount > 0) {
-					var range = selection.getRangeAt(0);
-					var container = range.startContainer;
-					var node = container.nodeType === 3 ? container.parentNode : container;
+	// 수정 모드가 아닐 때만 중첩 체크 수행
+	if(!isEditMode) {
+		try {
+			if(iframe_obj) {
+				var actualIframe = iframe_obj.querySelector('iframe');
+				if(actualIframe && actualIframe.contentWindow && actualIframe.contentWindow.document) {
+					var iframeDoc = actualIframe.contentWindow.document;
+					var selection = iframeDoc.getSelection ? iframeDoc.getSelection() :
+									(iframeDoc.defaultView && iframeDoc.defaultView.getSelection ?
+									iframeDoc.defaultView.getSelection() : null);
 
-					while(node && node.nodeType !== 9) {
-						if(node.nodeType === 1 && node.nodeName === 'DIV' &&
-						node.getAttribute('editor_component') === 'synstax_highlight') {
-							alert('코드 블록 내부에는 다른 코드 블록을 삽입할 수 없습니다.');
-							return;
+					if(selection && selection.rangeCount > 0) {
+						var range = selection.getRangeAt(0);
+						var container = range.startContainer;
+						var node = container.nodeType === 3 ? container.parentNode : container;
+
+						while(node && node.nodeType !== 9) {
+							if(node.nodeType === 1 && node.nodeName === 'DIV' &&
+							node.getAttribute('editor_component') === 'synstax_highlight') {
+								alert('코드 블록 내부에는 다른 코드 블록을 삽입할 수 없습니다.');
+								return;
+							}
+							node = node.parentNode;
 						}
-						node = node.parentNode;
 					}
 				}
 			}
-		}
-	} catch(e) {}
+		} catch(e) {}
+	}
 
 	var form$ = jQuery('#fo');
 	var opt = getArrangedOption(form$);
