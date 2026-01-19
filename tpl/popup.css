@@ -1,0 +1,166 @@
+@charset "utf-8";
+
+#preview {
+	margin-top: 20px;
+}
+
+.preview-content {
+	min-height: 100px;
+}
+
+.preview-content pre {
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	border-radius: 0;
+	overflow-x: auto;
+	font-size: 0.9rem;
+	line-height: 1.6;
+}
+
+.preview-content code {
+	font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+pre,
+pre.hljs {
+	position: relative;
+	overflow: visible;
+	padding: 0 20px;
+	padding-top: 20px;
+	background: #1e1e1e !important;
+	border: 1px solid #3c3c3c;
+	border-radius: 8px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #d4d4d4;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow-x: auto;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	font-family: 'Consolas', 'Monaco', 'Courier New', 'D2Coding', monospace;
+	margin: 15px 0;
+}
+
+pre code.hljs,
+pre .hljs {
+	background: #1e1e1e !important;
+	color: #ffffff !important;
+}
+
+pre .code-lang-label {
+	height: 40px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 10px 16px;
+	background: #2d2d2d;
+	border-bottom: 1px solid #3c3c3c;
+	border-radius: 8px 8px 0 0;
+	font-size: 11px;
+	font-weight: 600;
+	color: #b6d031;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+pre .code-lang-text {
+	flex: 0 0 auto;
+}
+
+pre.hljs .code-lang-label .copy-button,
+pre .code-lang-label .copy-button {
+	opacity: 1 !important;
+	position: static !important;
+	margin-left: auto !important;
+	padding: 2px 8px !important;
+	font-size: 11px !important;
+	font-weight: 400 !important;
+	color: #d4d4d4 !important;
+	background: rgba(60, 60, 60, 0.6) !important;
+	border: 1px solid #4a4a4a !important;
+	border-radius: 4px !important;
+	cursor: pointer !important;
+	transition: all 0.2s ease !important;
+	z-index: 10 !important;
+	font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+	display: inline-block !important;
+	text-align: center !important;
+	text-decoration: none !important;
+	box-sizing: border-box !important;
+	line-height: 1.2 !important;
+	vertical-align: middle !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+pre.hljs .code-lang-label .copy-button:hover,
+pre .code-lang-label .copy-button:hover {
+	color: #fff !important;
+	background: rgba(80, 80, 80, 0.8) !important;
+	border-color: #5a5a5a !important;
+}
+
+pre.hljs .code-lang-label .copy-button:active,
+pre .code-lang-label .copy-button:active {
+	transform: scale(0.98) !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+pre.hljs .code-lang-label .copy-button.copy-message,
+pre .code-lang-label .copy-button.copy-message {
+	color: #4ec9b0 !important;
+	background: rgba(60, 60, 60, 0.8) !important;
+	border-color: #4ec9b0 !important;
+}
+
+pre.hljs .code-lang-label .copy-button.copy-message:hover,
+pre .code-lang-label .copy-button.copy-message:hover {
+	color: #4ec9b0 !important;
+	border-color: #4ec9b0 !important;
+}
+
+pre code {
+	padding: 0 !important;
+	background: transparent !important;
+	color: inherit;
+	font-size: inherit;
+	font-family: inherit;
+	display: block;
+	overflow-x: auto;
+}
+
+code:not(pre code) {
+	padding: 2px 6px;
+	background: #f1f3f5;
+	border-radius: 4px;
+	font-size: 0.9em;
+	color: #e83e8c;
+	font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+@media screen and (max-width: 768px) {
+	pre {
+		padding: 15px;
+		padding-top: 50px;
+		font-size: 13px;
+	}
+
+	pre .code-lang-label {
+		height: 36px;
+		padding: 6px 12px;
+		font-size: 10px;
+	}
+
+	pre.hljs .code-lang-label .copy-button,
+	pre .code-lang-label .copy-button {
+		padding: 2px 6px !important;
+		font-size: 10px !important;
+	}
+}

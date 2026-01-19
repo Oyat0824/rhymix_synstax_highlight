@@ -1,0 +1,199 @@
+<!--%import("popup.js")-->
+<!--%import("popup.css")-->
+{@Context::addMetaTag('viewport', 'width=device-width', FALSE);}
+
+<div class="x_modal-header">
+	<h1>{$component_info->title}</h1>
+	<a class="close_window" href="javascript:window.close()">&times;</a>
+</div>
+
+<div class="x_modal-body">
+	<form action="./" method="get" onSubmit="return false" id="fo" class="x_form-horizontal">
+		<div class="x_control-group">
+			<label for="code_type" class="x_control-label">
+				언어 선택 <span class="required">*</span>
+			</label>
+			<div class="x_controls">
+				<select name="code_type" id="code_type" class="x_input" required>
+					<option loop="$languages => $item" value="{$item[1]}">{$item[0]}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="x_control-group">
+			<label for="theme_display" class="x_control-label">테마</label>
+			<div class="x_controls">
+				<input type="text" id="theme_display" class="x_input" value="{$current_theme_name}" readonly style="background-color:#f5f5f5; cursor:not-allowed;" />
+			</div>
+		</div>
+
+		<div class="x_control-group">
+			<label for="code" class="x_control-label">
+				코드 <span class="required">*</span>
+			</label>
+			<div class="x_controls">
+				<textarea name="code" id="code" class="x_input" style="width:100%; height:200px; font-family:'Consolas','Monaco','Courier New',monospace;" placeholder="여기에 코드를 입력해주세요" required></textarea>
+			</div>
+		</div>
+
+		<div id="preview" style="margin-top:20px; padding:15px; background:#f5f5f5; border:1px solid #ddd; border-radius:4px; display:none;">
+			<div style="font-weight:bold; margin-bottom:10px; color:#333;">미리보기</div>
+			<div class="preview-content"></div>
+		</div>
+
+		<div class="x_clearfix btnArea">
+			<div class="x_pull-right">
+				<button type="button" id="btn_preview" class="x_btn">미리보기</button>
+				<button type="button" onclick="insertCode()" class="x_btn x_btn-primary">{$lang->cmd_submit}</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+(function($) {
+$(function() {
+	getCode();
+	$('#btn_preview').on('click', previewCode);
+
+	// 탭키 처리: 코드 입력창에서 탭키로 들여쓰기 (Ctrl+Z 지원)
+	$('#code').on('keydown', function(e) {
+		if(e.keyCode === 9 || e.which === 9) {
+			e.preventDefault();
+			var textarea = this;
+			var start = textarea.selectionStart;
+			var end = textarea.selectionEnd;
+			var value = textarea.value;
+
+			// 선택된 텍스트가 있는지 확인
+			var selectedText = value.substring(start, end);
+			var hasSelection = selectedText.length > 0;
+
+			function replaceTextWithUndo(newText, newStart, newEnd) {
+				// document.execCommand를 사용하여 undo 스택에 추가
+				textarea.focus();
+				textarea.setSelectionRange(start, end);
+
+				// execCommand가 지원되는 경우 사용
+				if(document.execCommand && document.execCommand('insertText', false, newText)) {
+					textarea.setSelectionRange(newStart, newEnd);
+					return true;
+				}
+
+				// execCommand가 지원되지 않는 경우 setRangeText 사용
+				textarea.setRangeText(newText, start, end, 'select');
+				textarea.setSelectionRange(newStart, newEnd);
+
+				// input 이벤트 발생시켜 undo 스택에 추가 시도
+				var inputEvent = new Event('input', { bubbles: true, cancelable: true });
+				textarea.dispatchEvent(inputEvent);
+				return false;
+			}
+
+			if(e.shiftKey) {
+				// Shift+Tab: 역들여쓰기
+				if(hasSelection) {
+					// 여러 줄 선택 시 각 줄에 역들여쓰기 적용
+					var lines = selectedText.split('\n');
+					var unindented = lines.map(function(line) {
+						if(line.startsWith('    ')) {
+							return line.substring(4);
+						} else if(line.startsWith('\t')) {
+							return line.substring(1);
+						}
+						return line;
+					}).join('\n');
+
+					replaceTextWithUndo(unindented, start, start + unindented.length);
+				} else {
+					// 단일 커서 위치에서 역들여쓰기
+					var lineStart = value.lastIndexOf('\n', start - 1) + 1;
+					var lineEnd = value.indexOf('\n', start);
+					if(lineEnd === -1) lineEnd = value.length;
+					var lineText = value.substring(lineStart, lineEnd);
+					var beforeLine = value.substring(0, lineStart);
+					var afterLine = value.substring(lineEnd);
+
+					if(lineText.startsWith('    ')) {
+						var newText = beforeLine + lineText.substring(4) + afterLine;
+						textarea.value = newText;
+						var newPos = Math.max(lineStart, start - 4);
+						textarea.setSelectionRange(newPos, newPos);
+						textarea.dispatchEvent(new Event('input', { bubbles: true }));
+					} else if(lineText.startsWith('\t')) {
+						var newText = beforeLine + lineText.substring(1) + afterLine;
+						textarea.value = newText;
+						var newPos = Math.max(lineStart, start - 1);
+						textarea.setSelectionRange(newPos, newPos);
+						textarea.dispatchEvent(new Event('input', { bubbles: true }));
+					}
+				}
+			} else {
+				// Tab: 들여쓰기
+				if(hasSelection) {
+					// 여러 줄 선택 시 각 줄에 들여쓰기 추가
+					var lines = selectedText.split('\n');
+					var indented = lines.map(function(line) {
+						return '    ' + line;
+					}).join('\n');
+
+					replaceTextWithUndo(indented, start, start + indented.length);
+				} else {
+					// 단일 커서 위치에 들여쓰기 추가
+					replaceTextWithUndo('    ', start + 4, start + 4);
+				}
+			}
+		}
+	});
+});
+
+function previewCode()
+{
+	var form$ = jQuery('#fo');
+	var preview$ = jQuery('#preview .preview-content');
+	var opt = getArrangedOption(form$);
+
+	if (!opt.code || opt.code.trim() === '') {
+		preview$.html('<p style="color:#999; font-style:italic; text-align:center; padding:2rem;">코드를 입력해주세요.</p>');
+		jQuery('#preview').show();
+		return;
+	}
+
+	opt.code = getArrangedCode(opt.code, 'preview');
+
+	var langName = 'JavaScript';
+	var langSelect = form$.find('select[name=code_type]');
+	if (langSelect.length) {
+		langName = langSelect.find('option:selected').text();
+	}
+
+	var langClass = 'language-' + (opt.code_type || 'javascript');
+	var html = '<pre class="hljs">';
+	html += '<code class="hljs ' + langClass + '">' + opt.code + '</code>';
+	html += '</pre>';
+
+	preview$.html(html);
+	jQuery('#preview').show();
+
+	if (typeof hljs !== 'undefined') {
+		setTimeout(function() {
+			var code = preview$[0].querySelector('code');
+			if(code) {
+				var langMatch = code.className.match(/language-(\w+)/);
+				var lang = langMatch ? langMatch[1] : 'javascript';
+				try {
+					var result = hljs.highlight(code.textContent, {language: lang, ignoreIllegals: true});
+					code.innerHTML = result.value;
+					code.className = 'hljs language-' + lang;
+				} catch(e) {
+				}
+			}
+		}, 100);
+	}
+
+	setFixedPopupSize();
+}
+}) (jQuery);
+//]]>
+</script>

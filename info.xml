@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component version="0.2">
+	<title>Synstax Highlight</title>
+	<description>코드를 보기 좋게 출력합니다. (Highlight.js 기반)</description>
+	<version>1.0</version>
+	<date>2025-01-20</date>
+	<license>MIT, GNU LGPL</license>
+	<link>https://github.com/Oyat0824</link>
+
+	<author link="https://github.com/Oyat0824">
+		<name>Oyat0824</name>
+	</author>
+
+	<extra_vars>
+		<var name="theme" type="select">
+			<title>기본 테마</title>
+			<description>
+				<![CDATA[
+				코드 하이라이팅에 사용할 기본 테마를 선택하세요.
+				테마는 컴포넌트 설정에서만 변경 가능하며, 팝업창에서는 변경할 수 없습니다.
+				]]>
+			</description>
+			<options value="atom-one-dark-reasonable">
+				<title>Atom One Dark (Reasonable)</title>
+			</options>
+			<options value="atom-one-dark">
+				<title>Atom One Dark</title>
+			</options>
+			<options value="monokai">
+				<title>Monokai</title>
+			</options>
+			<options value="vs2015">
+				<title>Visual Studio 2015 Dark</title>
+			</options>
+			<options value="night-owl">
+				<title>Night Owl</title>
+			</options>
+		</var>
+		<var name="enabled_languages" type="text">
+			<title>사용할 언어 목록</title>
+			<description>
+				<![CDATA[
+				팝업에서 사용할 언어를 선택하세요. 언어 ID를 쉼표로 구분하여 입력하세요.
+				예: javascript,python,java,php,cpp,xml,css,sql,json,bash
+				비워두면 기본 추천 언어를 사용합니다.
+
+				기본 추천 언어 (기본값):
+				javascript, python, java, php, cpp, xml, css, sql, json, bash
+
+				사용 가능한 모든 언어 목록:
+				applescript, bash, c, cpp, csharp, css, groovy, java, javascript, json, perl, php, powershell, python, ruby, scala, scss, sql, typescript, xml, yaml
+				]]>
+			</description>
+		</var>
+	</extra_vars>
+</component>
